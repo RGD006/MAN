@@ -1,0 +1,15 @@
+__src
+_src
+__examples
+__ignore
+src/.vscode
+node_modules
+yarn-error.log
+*.patch
+model.h
+tensorflow
+.idea/
+deprecated/examples/.idea/
+deprecated/examples/Vision/Processing/RGBHistogramExample/main.cpp
+deprecated/examples/Vision/Processing/RGBHistogramExample/a.out
+disabled
