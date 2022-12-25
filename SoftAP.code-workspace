@@ -1,0 +1,35 @@
+{
+	"folders": [
+    {
+      "path": "SoftAP"
+    },
+    {
+      "name": "connector",
+      "path": "connector"
+    },
+    {
+      "path": "python"
+    }
+  ],
+  "settings": {
+    "git.ignoreLimitWarning": true,
+    "lldb.displayFormat": "auto",
+    "lldb.showDisassembly": "auto",
+    "lldb.dereferencePointers": true,
+    "lldb.consoleMode": "evaluate",
+    "files.associations": {
+      "*.cpp": "cpp",
+      "*.pro": "cpp",
+      "array": "cpp",
+      "deque": "cpp",
+      "list": "cpp",
+      "string": "cpp",
+      "unordered_map": "cpp",
+      "vector": "cpp",
+      "string_view": "cpp",
+      "initializer_list": "cpp",
+      "ranges": "cpp",
+      "span": "cpp"
+    }
+  }
+}

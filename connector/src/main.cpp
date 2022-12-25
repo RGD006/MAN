@@ -46,34 +46,40 @@ void setup() {
   Firebase.begin(&config, &auth);
 }
 
-void send_data(String name, int value_rssi) {
-  if (Firebase.RTDB.setString(&fbdo, "/signal_" + name + "/SSID", name) && Firebase.RTDB.setInt(&fbdo, "/signal_" + name + "/RSSI", value_rssi)) {
-    Serial.printf("All ok \nSSID: %s\tRSSI: %i\n", name.c_str(), value_rssi); 
-  } else {
-    Serial.println("ERROR");
-  }
-}
-
 void loop() { 
   u8g2.setFont(u8g2_font_b10_t_japanese1);
   u8g2.setFontDirection(0);
   u8g2.firstPage();
 
+  
   Serial.println();
 
   int number_of_stations = WiFi.scanNetworks();
   do {
+    u8g2.setCursor(0,20);
+    
     for (int i = 0; i < number_of_stations; ++i) {
       if (std::find(ssid.begin(), ssid.end(), WiFi.SSID(i)) != ssid.end()) {
+
 
         Serial.print(WiFi.SSID(i));
         Serial.printf(" %i", WiFi.RSSI(i));
         Serial.println();
-        
-        send_data(WiFi.SSID(i), WiFi.RSSI(i));
-        delay(100);
+
+        if (Firebase.RTDB.setString(&fbdo, "/signal_" + WiFi.SSID(i) + "/SSID", WiFi.SSID(i)) 
+            && Firebase.RTDB.setInt(&fbdo, "/signal_" + WiFi.SSID(i) + "/RSSI", WiFi.RSSI(i))) {
+          Serial.printf("All ok \nSSID: %s\tRSSI: %i\n", WiFi.SSID(i).c_str(), WiFi.RSSI(i));
+          u8g2.print("SUCCESED SSID: ");
+          u8g2.print(WiFi.SSID(i));
+        }
+        else {
+          Serial.println("ERROR");
+          u8g2.print("FAILED SSID: ");
+          u8g2.print(WiFi.SSID(i));
+        }
+        delay(1000);
       }
     }
-    delay(1000);
+    delay(5000);
   } while (u8g2.nextPage());
 }
