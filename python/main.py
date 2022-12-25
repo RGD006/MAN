@@ -1,6 +1,7 @@
 from sklearn.svm import SVC
 import numpy as np
 import json
+import matplotlib.pyplot as plt
 
 # JSON parameters
 # 1st anchor Test
@@ -18,7 +19,7 @@ coordinates = []
 
 
 def return_distance_m(d: dict, SSID: str, SSID_id: int, SSID_it: int) -> float:
-	return pow(10, ((d['RSSI'] - RSSI_coordinates[SSID_id][SSID][SSID_it])) / 20)
+	return pow(10, ((d['RSSI'] - RSSI_coordinates[SSID_id][SSID][SSID_it])) / 10)
 
 
 def calc_matrix2(it_coord: int, x_y: str):
@@ -59,11 +60,13 @@ def make_matrix2():
 
 make_matrix2()
 
-end_data = {
+x_y_d = {
 	"Test": [],
 	"Test2": [],
 	"Vlad": []
 }
+
+end_coordinates = list()
 
 for el in x_y[:-1:]:
 	for d in distance_m[el["name"]]:
@@ -71,18 +74,39 @@ for el in x_y[:-1:]:
 		temp.append(el["x"])
 		temp.append(el["y"])
 		temp.append(d)
-		end_data[el["name"]].append(temp)
+		x_y_d[el["name"]].append(temp)
 
 for el in distance_m["Vlad"]:
-	end_data["Vlad"].append(el)
+	x_y_d["Vlad"].append(el)
 
-for it in range(len(end_data["Test"])):
+for it in range(len(x_y_d["Test"])):
 	temp = []
 	for name in names_anchor[:-1:]:
-		print(end_data[name][it][0], end_data[name][it][1], end_data[name][it][2], end_data[names_anchor[-1]][it])
-		temp.append(calc_matrix1(end_data[name][it][0], end_data[name][it][1], end_data[name][it][2], end_data[names_anchor[-1]][it]))
+		# print(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it], 
+		calc_matrix1(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it])
+		temp.append(calc_matrix1(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it]))
 	matrix1.append(temp)
 
-  
+	matrix2_t = np.transpose(matrix2)
+	matrix1_matrix2T = np.dot(matrix1, matrix2_t)
+	matrix2_matrix2T = np.dot(matrix2_t, matrix2)
+
+	inv_matrix2_matrix2T = np.linalg.inv(matrix2_matrix2T)
+
+	# print(matrix1_matrix2T, matrix2_matrix2T, inv_matrix2_matrix2T, sep="\n")
+
+	# print(np.dot(matrix1_matrix2T, inv_matrix2_matrix2T))
+	end_coordinates.append(np.dot(matrix1_matrix2T, inv_matrix2_matrix2T))
 
 	matrix1 = []
+
+x = [coordinates[0]["x"], coordinates[1]["x"], coordinates[2]['x']] + [x[0][0] for x in end_coordinates]
+y = [coordinates[0]["y"], coordinates[1]["y"], coordinates[2]["y"]] + [y[0][1] for y in end_coordinates]
+
+# print([coordinates[0]["x"], coordinates[1]["x"], coordinates[2]['x']] + x)
+
+x_point = np.array(x)
+y_point = np.array(y)
+
+plt.plot(x_point, y_point, 'o', ms = 5)
+plt.show()
