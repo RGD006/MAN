@@ -2,6 +2,7 @@ from sklearn.svm import SVC
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+import math
 
 # JSON parameters
 # 1st anchor Test
@@ -18,8 +19,12 @@ distance_m = {
 coordinates = []
 
 
+# def return_distance_m(d: dict, SSID: str, SSID_id: int, SSID_it: int) -> float:
+# 	return pow(10, (abs(d['RSSI']) - RSSI_coordinates[SSID_id][SSID][SSID_it]) / 150)
+
+
 def return_distance_m(d: dict, SSID: str, SSID_id: int, SSID_it: int) -> float:
-	return pow(10, ((d['RSSI'] - RSSI_coordinates[SSID_id][SSID][SSID_it])) / 10)
+	return pow(10, (RSSI_coordinates[SSID_id][SSID][SSID_it] - d['RSSI']) / 10 * 2)
 
 
 def calc_matrix2(it_coord: int, x_y: str):
@@ -47,7 +52,7 @@ matrix2 = []
 x_y = [{'name': el["name"],"x": el["x"],"y": el["y"]} for el in coordinates[:-1:]]
 
 def calc_matrix1(x, y, d, d_end) -> float:
-	return (x ** 2 + y ** 2 + d_end ** 2) - (x_y[-1]["x"] ** 2 + x_y[-1]["y"] ** 2 + d ** 2)
+	return (pow(x, 2) + pow(y, 2) + pow(d_end, 2)) - (pow(x_y[-1]["x"], 2) + pow(x_y[-1]["y"], 2) + pow(d, 2))
 
 
 def make_matrix2():
@@ -66,6 +71,8 @@ x_y_d = {
 	"Vlad": []
 }
 
+print(distance_m)
+
 end_coordinates = list()
 
 for el in x_y[:-1:]:
@@ -83,7 +90,7 @@ for it in range(len(x_y_d["Test"])):
 	temp = []
 	for name in names_anchor[:-1:]:
 		# print(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it], 
-		calc_matrix1(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it])
+		# calc_matrix1(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it])
 		temp.append(calc_matrix1(x_y_d[name][it][0], x_y_d[name][it][1], x_y_d[name][it][2], x_y_d[names_anchor[-1]][it]))
 	matrix1.append(temp)
 
@@ -100,13 +107,25 @@ for it in range(len(x_y_d["Test"])):
 
 	matrix1 = []
 
-x = [coordinates[0]["x"], coordinates[1]["x"], coordinates[2]['x']] + [x[0][0] for x in end_coordinates]
-y = [coordinates[0]["y"], coordinates[1]["y"], coordinates[2]["y"]] + [y[0][1] for y in end_coordinates]
+x = [x[0][0] for x in end_coordinates]
+y = [y[0][1] for y in end_coordinates]
 
 # print([coordinates[0]["x"], coordinates[1]["x"], coordinates[2]['x']] + x)
+print(x, y, sep="\n")
+
+a_point_x = np.array([coordinates[0]["x"], coordinates[1]["x"], coordinates[2]['x']])
+a_point_y = np.array([coordinates[0]["y"], coordinates[1]["y"], coordinates[2]["y"]])
+
+# 5, 2, 7
+# 8, 2, 3
+
+x_expected = [5,2,7]
+y_expected = [8,2,3]
 
 x_point = np.array(x)
 y_point = np.array(y)
 
+plt.plot(a_point_x, a_point_y, '^', ms = 10)
 plt.plot(x_point, y_point, 'o', ms = 5)
+plt.plot(x_expected, y_expected, '*', ms= 7)
 plt.show()
