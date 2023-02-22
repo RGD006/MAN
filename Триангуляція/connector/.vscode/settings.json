@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.cpp": "cpp",
+        "*.pro": "cpp",
+        "algorithm": "cpp"
+    },
+    "git.ignoreLimitWarning": true
+}
