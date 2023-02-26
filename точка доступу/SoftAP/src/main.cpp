@@ -8,7 +8,7 @@ extern "C"
 #include <user_interface.h>
 }
 
-const char *ssid = "Test_2";
+const char *ssid = "Test_3";
 const char *pass = "123456789"; 
 
 void setup() {

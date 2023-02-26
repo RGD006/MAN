@@ -11,8 +11,10 @@
 #include <String>
 #include <algorithm>
 #include <cmath>
+#include <numeric>
+#include <map> 
 
-#define NUMBER_OF_NETWORKS 4
+#define NUMBER_OF_NETWORKS 3
 #define FIREBASE_HOST "careful-form-371013-default-rtdb.europe-west1.firebasedatabase.app"
 #define FIREBASE_SECRET "MUFMetUYRPm1Dx09JbHSJD34vNNBuc8D3o6PgMI0"
 
@@ -29,16 +31,24 @@
 #define OLED_RESET 0 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-std::array<String, NUMBER_OF_NETWORKS> ssid = {"Test_1", "Test_2", "Test_3", "Anhor_of_WiFi"};
+std::array<String, NUMBER_OF_NETWORKS> ssid = {"Test_1", "Test_2", "Test_3"};
 std::array<String, NUMBER_OF_NETWORKS> pass = {"123456789", "0987654321a", "What is love"};
 
+std::map<String, std::array<int, 10>> rssi_signal_map; int it = 0;
 FirebaseConfig config;
 FirebaseAuth auth;
 FirebaseData fbdo;
 
+void clear_map(std::map<String, std::array<int, 10>> &map) 
+{
+  for (auto array : map) {
+    array.second = std::array<int, 10>({0, 0, 0, 0, 0, 0, 0, 0});
+  }
+}
+
 void setup() {
   Serial.begin(9600);
-  WiFi.begin(ssid[1], pass[1]);
+  WiFi.begin("Anchor_of_WiFi", "What is love");
   while(WiFi.status() != WL_CONNECTED){
     delay(300);
     Serial.print(". ");
@@ -58,6 +68,22 @@ void setup() {
     for (;;)
       ; // Don't proceed, loop forever
   }
+
+  for (String name : ssid) {
+    rssi_signal_map[name] = std::array<int, 10>({0, 0, 0, 0, 0, 0, 0, 0, 0});
+  }
+
+  clear_map(rssi_signal_map);
+
+//   for (const auto el : rssi_signal_map) {
+//     Serial.print(el.first);
+//     Serial.print(" ");
+//     for (int n : el.second) {
+//       Serial.print(n);
+//       Serial.print(" ");
+//     }
+//     Serial.println();
+//   }
 }
 
 void loop() { 
@@ -81,14 +107,35 @@ void loop() {
       Serial.printf(" %i", WiFi.RSSI(i));
       Serial.println();
 
-      if (Firebase.RTDB.setString(&fbdo, "/signal_" + WiFi.SSID(i) + "/SSID", WiFi.SSID(i)) 
-          && Firebase.RTDB.setInt(&fbdo, "/signal_" + WiFi.SSID(i) + "/RSSI", WiFi.RSSI(i))) {
-        Serial.printf("All ok \nSSID: %s\tRSSI: %i\n", WiFi.SSID(i).c_str(), WiFi.RSSI(i));
+      rssi_signal_map[WiFi.SSID(i)][it] = WiFi.RSSI(i);
+    //   for (const auto el : rssi_signal_map)
+    //   {
+    //     Serial.print(el.first);
+    //     Serial.print(" ");
+    //     for (int n : el.second)
+    //     {
+    //       Serial.print(n);
+    //       Serial.print(" ");
+    //     }
+    //     Serial.println();
+    //   }
+    }
+  }  
+  // } while (u8g2.nextPage());
+  it++;
+
+  if (it == 10) {
+    for (auto array : rssi_signal_map) {
+      double mid = std::accumulate(array.second.begin(), array.second.end(), 0) / 10.0;
+      if (Firebase.RTDB.setString(&fbdo, "/signal_" + array.first + "/SSID", array.first) 
+          && Firebase.RTDB.setDouble(&fbdo, "/signal_" + array.first + "/RSSI", mid))
+      {
+        Serial.printf("All ok \nSSID: %s\tRSSI: %f\n", array.first.c_str(), mid);
         // u8g2.print("SUCCESED SSID: ");
         // u8g2.print(WiFi.SSID(i));
 
         display.print("Succesed SSID: ");
-        display.println(WiFi.SSID(i));
+        display.println(array.first);
       }
       else {
         Serial.println("ERROR");
@@ -96,15 +143,24 @@ void loop() {
         // u8g2.print(WiFi.SSID(i));
 
         display.print("Error SSID: ");
-        display.println(WiFi.SSID(i));
+        display.println(array.first);
       }
       delay(1000);
     }
+    clear_map(rssi_signal_map);
+    it = 0;
   }
-  delay(5000);
-  // } while (u8g2.nextPage());
 
-
+  if (it == 11)
+  {
+    it = 0;
+    clear_map(rssi_signal_map);
+  }
+  display.setCursor(0, 40);
+  display.print("iterator: ");
+  display.println(it);
   display.display();
 
+  Serial.print(it);
+  delay(3000);
 }

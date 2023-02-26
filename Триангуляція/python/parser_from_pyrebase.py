@@ -53,7 +53,7 @@ while True:
     with open("coordinates.json", "w") as file:
       json.dump(json_file, file, indent=4)
     
-  sleep(15)
+  sleep(35)
 
 
 
