@@ -8,22 +8,22 @@ import matplotlib.pyplot as plt
 # Test2
 # Vlad
 
-coord_x = [1, 10, 4]
-coord_y = [10, 7, 1]
+coord_x = [10, 0, 4]
+coord_y = [0, 0, 3]
 
 last_x = 4
 last_y = 1
 
-RSSI_CONST_TEST = -51
-RSSI_CONST_TEST2 = -61
-RSSI_CONST_VLAD = -44
+RSSI_CONST_TEST = -52
+RSSI_CONST_TEST2 = -52
+RSSI_CONST_VLAD = -52
 
 
 def calc_d(rssi_test, rssi_test2, rssi_vlad):
   res = []
-  res.append(pow(10, (RSSI_CONST_TEST + abs(rssi_test)) / (10 * 3)))
-  res.append(pow(10, (RSSI_CONST_TEST2 + abs(rssi_test2)) / (10 * 3)))
-  res.append(pow(10, (RSSI_CONST_VLAD + abs(rssi_vlad)) / (10 * 3)))
+  res.append(pow(10, (RSSI_CONST_TEST + abs(rssi_test)) / (10 * 2.4)))
+  res.append(pow(10, (RSSI_CONST_TEST2 + abs(rssi_test2)) / (10 * 2.4)))
+  res.append(pow(10, (RSSI_CONST_VLAD + abs(rssi_vlad)) / (10 * 2.4)))
   return res
 
 l = calc_d(-65, -58, -47)
@@ -69,8 +69,8 @@ for matrix in MATRIX_TO_CALCULATE:
   matrix_matrix2T = np.dot(MATRIX2_T, matrix)
   RESULT_TO_MODEL.append(np.dot(inv_matrix2_matrix2T, matrix_matrix2T))
 
-# x_expected = [5,2,7]
-# y_expected = [8,2,3]
+x_expected = [7,3,5,8,3]
+y_expected = [2,1,2,1,3]
 
 
 x_res = []
@@ -90,7 +90,7 @@ for el in RESULT_TO_MODEL:
 # print(x_res, y_res, sep="\n\n\n")
 
 # plt.plot(x_expected, y_expected, "*")
-plt.plot([1, 10, 4], [10, 10, 1], "^")
+plt.plot([10, 0, 4], [0, 0, 3], "^")
 
 for i in range(len(x_res)):
     if i <= 6:
@@ -103,12 +103,9 @@ for i in range(len(x_res)):
         b1x_res.append(x_res[i])
         b1y_res.append(y_res[i])
 
-
-
-plt.plot([0, 10], [5, 5])
-plt.plot([6, 6], [10, 5])
-plt.scatter(b1x_res, b1y_res, 100, marker="$B1$")
-plt.scatter(b2x_res, b2y_res, 100, marker="$B2$")
-plt.scatter(lx_res, ly_res, 100, marker="$L$")
+plt.scatter(b1x_res, b1y_res, 50)
+plt.scatter(b2x_res, b2y_res, 50)
+plt.scatter(lx_res, ly_res, 50)
+plt.scatter(x_expected, y_expected, 50)
 plt.show()
 
