@@ -15,15 +15,12 @@ last_x = 4
 last_y = 1
 
 RSSI_CONST_TEST = -52
-RSSI_CONST_TEST2 = -52
-RSSI_CONST_VLAD = -52
 
-
-def calc_d(rssi_test, rssi_test2, rssi_vlad):
+def calc_d(test_1, test_2, test_3):
   res = []
-  res.append(pow(10, (RSSI_CONST_TEST + abs(rssi_test)) / (10 * 2.4)))
-  res.append(pow(10, (RSSI_CONST_TEST2 + abs(rssi_test2)) / (10 * 2.4)))
-  res.append(pow(10, (RSSI_CONST_VLAD + abs(rssi_vlad)) / (10 * 2.4)))
+  res.append(pow(10, (RSSI_CONST_TEST + abs(test_1)) / (10 * 2.4)))
+  res.append(pow(10, (RSSI_CONST_TEST + abs(test_2)) / (10 * 2.4)))
+  res.append(pow(10, (RSSI_CONST_TEST + abs(test_3)) / (10 * 2.4)))
   return res
 
 l = calc_d(-65, -58, -47)

@@ -93,6 +93,11 @@ void loop() {
   int number_of_stations = WiFi.scanNetworks();
   Serial.println();
 
+  int number_of_pair;
+  if (Firebase.RTDB.getInt(&fbdo, "Number_Trio/n:"))
+    number_of_pair = fbdo.to<int>();
+  else return;
+
   // do {
     // u8g2.setCursor(0,20);
   display.clearDisplay();
@@ -127,26 +132,17 @@ void loop() {
   if (it == 10) {
     for (auto array : rssi_signal_map) {
       double mid = std::accumulate(array.second.begin(), array.second.end(), 0) / 10.0;
-      if (Firebase.RTDB.setString(&fbdo, "/signal_" + array.first + "/SSID", array.first) 
-          && Firebase.RTDB.setDouble(&fbdo, "/signal_" + array.first + "/RSSI", mid))
-      {
-        Serial.printf("All ok \nSSID: %s\tRSSI: %f\n", array.first.c_str(), mid);
-        // u8g2.print("SUCCESED SSID: ");
-        // u8g2.print(WiFi.SSID(i));
-
-        display.print("Succesed SSID: ");
-        display.println(array.first);
-      }
-      else {
-        Serial.println("ERROR");
-        // u8g2.print("FAILED SSID: ");
-        // u8g2.print(WiFi.SSID(i));
-
-        display.print("Error SSID: ");
-        display.println(array.first);
+      if (Firebase.RTDB.setDouble(&fbdo, "Value_Trio/Pair" + String(number_of_pair) + "/" + array.first, mid)) {
+        Serial.println("SUCCES");
+        display.print("SUCCES");
+      } else {
+        Serial.print("ERROR");
+        display.print("ERROR"); 
       }
       delay(1000);
     }
+
+    Firebase.RTDB.setInt(&fbdo, "Number_Trio/n:", ++number_of_pair);
     clear_map(rssi_signal_map);
     it = 0;
   }

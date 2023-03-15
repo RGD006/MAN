@@ -4,5 +4,6 @@
     "activityBar.background": "#113507",
     "titleBar.activeBackground": "#174A0A",
     "titleBar.activeForeground": "#F4FDF1"
-  }
+},
+"git.ignoreLimitWarning": true
 }
