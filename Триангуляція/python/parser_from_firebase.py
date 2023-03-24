@@ -18,9 +18,9 @@ with open("coordinates.json", "w") as file:
     temp_2 = []
     temp_3 = []
     for i in range(1, len(ref.get()) + 1):
-        temp_1.append(ref.get()["Pair" + str(i)]["Test_1"])
-        temp_2.append(ref.get()["Pair" + str(i)]["Test_2"])
-        temp_3.append(ref.get()["Pair" + str(i)]["Test_3"])
+        temp_1.append(ref.get()["Pair" + str(i)]["Test_1"]) # type: ignore
+        temp_2.append(ref.get()["Pair" + str(i)]["Test_2"]) # type: ignore
+        temp_3.append(ref.get()["Pair" + str(i)]["Test_3"]) # type: ignore
     RSSI_SIGNAL.append(temp_1)
     RSSI_SIGNAL.append(temp_2)
     RSSI_SIGNAL.append(temp_3)
