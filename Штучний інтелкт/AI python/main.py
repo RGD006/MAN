@@ -2,7 +2,7 @@ import numpy as np
 from glob import glob
 from os.path import basename
 
-from sklearn.svm import OneClassSVM, SVC
+from sklearn.svm import SVC
 from micromlgen import port
 
 
@@ -19,11 +19,16 @@ def load_features(folder):
 
     return dataset, classmap
 
-features, classmap = load_features('classification')
+features, classmap = load_features('F:/Projects/MAN/Штучний інтелкт/AI python/classification')
 X, y = features[:, :-1], features[:, -1]
 
+from sklearn.ensemble import RandomForestClassifier
 
+def get_classifier(features):
+    X, y = features[:, :-1], features[:, -1]
 
-classifier = SVC(kernel='linear', gamma=0.001).fit(X, y)
+    return RandomForestClassifier(20, max_depth=10).fit(X, y)
+
+classifier = get_classifier(features)
 c_code = port(classifier, classmap=classmap)
 print(c_code)
